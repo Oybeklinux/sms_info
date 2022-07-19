@@ -18,6 +18,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 class SpecialtyViewSet(viewsets.ModelViewSet):
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class LessonViewSet(viewsets.ModelViewSet):

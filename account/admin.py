@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import TeacherProfile, StudentProfile, PayerProfile, User
+from .models import Teacher, Student, Payer, User
 
-admin.site.register(TeacherProfile)
-admin.site.register(PayerProfile)
-admin.site.register(StudentProfile)
+admin.site.register(Teacher)
+admin.site.register(Payer)
+admin.site.register(Student)
 admin.site.register(User)

@@ -12,19 +12,11 @@ from rest_framework.authtoken.models import Token
 
 
 class User(AbstractUser):
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", "Admin"
-        STUDENT = "STUDENT", "Student"
-        TEACHER = "TEACHER", "Teacher"
-        PAYER = "PAYER", "Payer" # STUDENT va PAYER ni o'z ichiga oladi
-
-    base_role = Role.STUDENT
-    role = models.CharField(max_length=50, choices=Role.choices, default=Role.ADMIN)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
-            return super().save(*args, **kwargs)
+    id = models.UUIDField(default=uuid.uuid4, unique=True,
+                          primary_key=True, editable=False)
+    is_teacher = models.BooleanField(default=False)
+    is_payer = models.BooleanField(default=False)
+    is_student = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -33,43 +25,22 @@ class User(AbstractUser):
 class StudentManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
-        return results.filter(role = User.Role.STUDENT)
-
-
-class Student(User):
-    base_role = User.Role.STUDENT
-
-    class Meta:
-        proxy = True
+        return results.filter(is_student=True)
 
 
 class TeacherManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.TEACHER)
-
-
-class Teacher(User):
-    base_role = User.Role.TEACHER
-
-    class Meta:
-        proxy = True
+        return results.filter(is_teacher=True)
 
 
 class PayerManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.PAYER)
+        return results.filter(is_payer=True)
 
 
-class Payer(User):
-    base_role = User.Role.PAYER
-
-    class Meta:
-        proxy = True
-
-
-class PayerProfile(models.Model):
+class Payer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="payers")
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
@@ -80,16 +51,10 @@ class PayerProfile(models.Model):
     who = models.CharField(max_length=100, null=True)
 
     def __str__(self):
-        return self.username
+        return self.user.username
 
 
-@receiver(post_save, sender=Payer)
-def create_payer_profile(sender, instance, created, **kwargs):
-    if created and instance.role == User.Role.PAYER:
-        PayerProfile.objects.create(user=instance)
-
-
-class StudentProfile(models.Model):
+class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="students")
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
@@ -101,21 +66,15 @@ class StudentProfile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     image = models.ImageField(upload_to="students", default="empty.png")
     email = models.EmailField(blank=True, null=True)
-    payer = models.ForeignKey(PayerProfile, on_delete=models.CASCADE, null=True)
+    payer = models.ForeignKey(Payer, on_delete=models.CASCADE, null=True)
     study = models.CharField(max_length=100, blank=True, null=True)
     work = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.surname
+        return self.user.username
 
 
-@receiver(post_save, sender=Student)
-def create_student_profile(sender, instance, created, **kwargs):
-    if created and instance.role == User.Role.STUDENT:
-        StudentProfile.objects.create(user=instance)
-
-
-class TeacherProfile(models.Model):
+class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="teachers")
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
@@ -126,16 +85,34 @@ class TeacherProfile(models.Model):
     phone = models.CharField(max_length=12, blank=True, null=True)
 
     def __str__(self):
-        return self.username
-
-
-@receiver(post_save, sender=Teacher)
-def create_teacher_profile(sender, instance, created, **kwargs):
-    if created and instance.role == User.Role.TEACHER:
-        TeacherProfile.objects.create(user=instance)
+        return self.user.username
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance, created, **kwargs):
+def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+# @receiver(post_save, sender=Payer)
+# def create_payer_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == User.Role.PAYER:
+#         Payer.objects.create(user=instance)
+#
+#
+#
+#
+# @receiver(post_save, sender=Student)
+# def create_student_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == User.Role.STUDENT:
+#         StudentProfile.objects.create(user=instance)
+#
+#
+#
+#
+# @receiver(post_save, sender=Teacher)
+# def create_teacher_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == User.Role.TEACHER:
+#         TeacherProfile.objects.create(user=instance)
+#
+#
