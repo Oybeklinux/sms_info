@@ -14,6 +14,17 @@ from pathlib import Path
 import os
 import environ
 import rest_framework.permissions
+from corsheaders.defaults import default_headers
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "api.smsinfo.kannas.uz",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "www.api.smsinfo.kannas.uz",
+]
+#making sure CORS_ALLOW_HEADERS  is not "*"
+CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 env = environ.Env()
 # reading .env file
@@ -32,8 +43,6 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -157,9 +166,8 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+CSRF_USE_SESSIONS = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None
