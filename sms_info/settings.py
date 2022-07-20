@@ -14,17 +14,6 @@ from pathlib import Path
 import os
 import environ
 import rest_framework.permissions
-from corsheaders.defaults import default_headers
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "api.smsinfo.kannas.uz",
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
-    "www.api.smsinfo.kannas.uz",
-]
-#making sure CORS_ALLOW_HEADERS  is not "*"
-CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 env = environ.Env()
 # reading .env file
@@ -34,7 +23,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
+# Quick-starCORS_ORIGIN_ALLOW_ALL = Truet development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -42,25 +31,26 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['api.smsinfo.kannas.uz', 'www.api.smsinfo.kannas.uz', "127.0.0.1"]
+CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
     'whitenoise.runserver_nostatic',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account.apps.AccountConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'main.apps.MainConfig',
     'drf_yasg',
+    'account.apps.AccountConfig',
+    'main.apps.MainConfig',
 ]
-AUTH_USER_MODEL='account.User'
+AUTH_USER_MODEL = 'account.User'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -153,21 +143,20 @@ if DEBUG:
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'assets'),  # debug uchun assets
     ]
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 else:
     STATIC_ROOT = env("STATIC_ROOT") # deploy uchun
-    MEDIA_ROOT = env("MEDIA_ROOT")
 
 MEDIA_URL = '/media/'
+MEDIA_ROOT = env("MEDIA_ROOT")
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CSRF_USE_SESSIONS = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = None
-SESSION_COOKIE_SAMESITE = None
