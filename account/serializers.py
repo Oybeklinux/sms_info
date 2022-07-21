@@ -15,7 +15,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password2', 'role', 'dob',
-                  'first_name', 'last_name', 'gender', 'phone', 'telegram']
+                  'first_name', 'last_name', 'surname', 'gender', 'phone', 'telegram']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -29,7 +29,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             telegram=self.validated_data['telegram'],
             dob=self.validated_data['dob'],
             gender=self.validated_data['gender'],
-            phone=self.validated_data['phone']
+            phone=self.validated_data['phone'],
+            surname=self.validated_data['surname']
         )
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
