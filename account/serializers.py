@@ -29,7 +29,10 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         if password != password2:
             raise serializers.ValidationError({"error": "Password is not match"})
         user.set_password(password)
-        user.role = self.validated_data['role']
+        if 'role' not in self.validated_data or not self.validated_data['role']:
+            user.role = 'STUDENT'
+        else:
+            user.role = self.validated_data['role']
         user.save()
         if user.role == "TEACHER":
             Teacher.objects.create(user=user)
