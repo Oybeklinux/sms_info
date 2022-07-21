@@ -145,9 +145,8 @@ if DEBUG:
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'assets'),  # debug uchun assets
     ]
-    STATIC_ROOT = os.path.join(BASE_DIR, 'sms_static')
-else:
-    STATIC_ROOT = env("STATIC_ROOT") # deploy uchun
+# STATIC_ROOT = os.path.join(BASE_DIR, 'sms_static')
+STATIC_ROOT = env('STATIC_ROOT')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = env("MEDIA_ROOT")
