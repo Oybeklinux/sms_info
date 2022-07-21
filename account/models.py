@@ -26,9 +26,9 @@ class User(AbstractUser):
     role = models.CharField(max_length=50, choices=ROLE, default="STUDENT")
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, default="man", choices=GENDER)
-    phone = models.CharField(max_length=50,null=True, blank=True)
-    telegram = models.CharField(max_length=50,null=True, blank=True)
-    surname = models.CharField(max_length=50,null=True, blank=True)
+    phone = models.CharField(max_length=50)
+    telegram = models.CharField(max_length=50, null=True, blank=True)
+    surname = models.CharField(max_length=50)
 
     def __str__(self):
         return self.username
