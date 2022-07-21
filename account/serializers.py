@@ -6,15 +6,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'is_student', 'is_teacher', 'is_payer', 'id']
+        fields = ['username', 'email', 'role', 'id']
 
 
-class StudentSignUpSerializer(serializers.ModelSerializer):
+class UserSignUpSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2']
+        fields = ['username', 'email', 'password', 'password2', 'role']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -29,59 +29,44 @@ class StudentSignUpSerializer(serializers.ModelSerializer):
         if password != password2:
             raise serializers.ValidationError({"error": "Password is not match"})
         user.set_password(password)
-        user.is_student = True
+        user.role = self.validated_data['role']
         user.save()
-        Student.objects.create(user=user)
+        if user.role == "TEACHER":
+            Teacher.objects.create(user=user)
+        elif user.role == "STUDENT":
+            Student.objects.create(user=user)
+        elif user.role == "PAYER":
+            Payer.objects.create(user=user)
+        elif user.role == "ADMIN":
+            user.is_staff = True
+            user.save()
+        elif user.role == "SUPERADMIN":
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
         return user
 
+#     delete update get ni yozib chiqish kerak
 
-class TeacherSignUpSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
+
+class TeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password2']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
-    def save(self, **kwargs):
-        user = User(
-            username=self.validated_data['username'],
-            email=self.validated_data['email']
-        )
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        if password != password2:
-            raise serializers.ValidationError({"error": "Password is not match"})
-        user.set_password(password)
-        user.is_teacher = True
-        user.save()
-        Teacher.objects.create(user=user)
-        return user
+        model = Teacher
+        fields = '__all__'
 
 
-class PayerSignUpSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
+class PayerSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password2']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        model = Payer
+        fields = '__all__'
 
-    def save(self, **kwargs):
-        user = User(
-            username=self.validated_data['username'],
-            email=self.validated_data['email']
-        )
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        if password != password2:
-            raise serializers.ValidationError({"error": "Password is not match"})
-        user.set_password(password)
-        user.is_payer = True
-        user.save()
-        Payer.objects.create(user=user)
-        return user
+
+class StudentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+

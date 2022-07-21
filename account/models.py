@@ -12,38 +12,46 @@ from rest_framework.authtoken.models import Token
 
 
 class User(AbstractUser):
-    id = models.UUIDField(default=uuid.uuid4, unique=True,
-                          primary_key=True, editable=False)
-    is_teacher = models.BooleanField(default=False)
-    is_payer = models.BooleanField(default=False)
-    is_student = models.BooleanField(default=False)
+    # id = models.UUIDField(default=uuid.uuid4, unique=True,
+    #                       primary_key=True, editable=False)
+    ROLE = [
+        ("TEACHER", "Teacher"),
+        ("STUDENT", "Student"),
+        ("PAYER", "Payer"),
+        ("ADMIN", "Admin"),
+        ("SUPERADMIN", "SuperAdmin"),
+    ]
+    role = models.CharField(max_length=50, choices=ROLE, default="STUDENT")
+    # is_teacher = models.BooleanField(default=False)
+    # is_payer = models.BooleanField(default=False)
+    # is_student = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
 
 
-class StudentManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(is_student=True)
+# class StudentManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(is_student=True)
 
 
-class TeacherManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(is_teacher=True)
-
-
-class PayerManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(is_payer=True)
-
-
+# class TeacherManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(is_teacher=True)
+#
+#
+# class PayerManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(is_payer=True)
+#
+#
 class Payer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="payers")
-    id = models.UUIDField(default=uuid.uuid4, unique=True,
-                          primary_key=True, editable=False)
+    # id = models.UUIDField(default=uuid.uuid4, unique=True,
+    #                       primary_key=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     surname = models.CharField(max_length=50, null=True)
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -56,8 +64,8 @@ class Payer(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="students")
-    id = models.UUIDField(default=uuid.uuid4, unique=True,
-                          primary_key=True, editable=False)
+    # id = models.UUIDField(default=uuid.uuid4, unique=True,
+    #                       primary_key=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     surname = models.CharField(max_length=50, null=True)
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -76,8 +84,8 @@ class Student(models.Model):
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="teachers")
-    id = models.UUIDField(default=uuid.uuid4, unique=True,
-                          primary_key=True, editable=False)
+    # id = models.UUIDField(default=uuid.uuid4, unique=True,
+    #                       primary_key=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     surname = models.CharField(max_length=50, null=True)
     name = models.CharField(max_length=50, blank=True, null=True)

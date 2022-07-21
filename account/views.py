@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, status
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
@@ -9,46 +9,19 @@ from .serializers import *
 from rest_framework.authtoken.views import ObtainAuthToken
 
 
-class TeacherSignUpView(generics.GenericAPIView):
-    serializer_class = TeacherSignUpSerializer
+class UserSignUpView(generics.GenericAPIView):
+    serializer_class = UserSignUpSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": Token.objects.get(user=user).key,
-            "message": "User created"
-            # "user_id": user.pk
-        })
-
-
-class StudentSignUpView(generics.GenericAPIView):
-    serializer_class = StudentSignUpSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            "token": Token.objects.get(user=user).key,
-            "message": "User created"
-        })
-
-
-class PayerSignUpView(generics.GenericAPIView):
-    serializer_class = PayerSignUpSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            "token": Token.objects.get(user=user).key,
-            "message": "User created"
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "user_id": user.id
         })
 
 
@@ -62,10 +35,11 @@ class LoginView(ObtainAuthToken):
         print(user.id)
         return Response({
             'token': token.key,
-            'user_id': user.pk,
-            'is_teacher': user.is_teacher,
-            'is_student': user.is_student,
-            'is_payer': user.is_payer
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "user_id": user.pk
+
         })
 
 
@@ -75,3 +49,31 @@ class LogoutView(APIView):
     def post(self, request, format=None):
         request.auth.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+
+class PayerViewSet(viewsets.ModelViewSet):
+    queryset = Payer.objects.all()
+    serializer_class = PayerSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get', 'put', 'patch', 'delete']
