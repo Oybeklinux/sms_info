@@ -17,6 +17,8 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
+        monthes = GroupMonth.objects.filter(group=instance).order_by('month').values()
+        # monthes = [month[0] for month in monthes]
 
         return {
             "id": instance.id,
@@ -25,10 +27,30 @@ class GroupSerializer(serializers.ModelSerializer):
             "start_time": instance.start_time,
             "duration_hours": instance.duration_hours,
             "duration_monthes": instance.duration_monthes,
-            "specialty_id": instance.specialty.id,
-            "specialty_name": instance.specialty.name,
-            "teacher_id": instance.teacher.id,
-            "teacher_name": f"{instance.teacher.surname} {instance.teacher.first_name}",
+            "even": instance.even,
+            "specialty_id": instance.specialty.id if instance.specialty else None,
+            "specialty_name": instance.specialty.name if instance.specialty else None,
+            "teacher_id": instance.teacher.id if instance.specialty else None,
+            "teacher_name": f"{instance.teacher.surname} {instance.teacher.first_name}"  if instance.specialty else None,
+            "groupmonth": monthes
+        }
+
+
+class GroupMonthSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GroupMonth
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        lessons = Lesson.objects.filter(groupmonth=instance).order_by('date').values()
+
+        return {
+            "id": instance.id,
+            "month": instance.month,
+            "name": instance.name,
+            "group": instance.group.id,
+            "lessons": lessons
         }
 
 

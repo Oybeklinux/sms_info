@@ -5,6 +5,7 @@ from .views import *
 
 router = DefaultRouter()
 router.register("group", GroupViewSet)
+router.register("groupmonth", GroupMonthViewSet)
 router.register("lesson", LessonViewSet)
 router.register("specialty", SpecialtyViewSet)
 router.register("lesson_student", LessonStudentViewSet)

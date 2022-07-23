@@ -15,6 +15,12 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
+class GroupMonthViewSet(viewsets.ModelViewSet):
+    queryset = GroupMonth.objects.all()
+    serializer_class = GroupMonthSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
 class SpecialtyViewSet(viewsets.ModelViewSet):
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
