@@ -20,10 +20,10 @@ class User(AbstractUser):
         ("teacher", "Teacher"),
         ("student", "Student"),
         ("payer", "Payer"),
-        ("sdmin", "Admin"),
+        ("admin", "Admin"),
         ("superAdmin", "SuperAdmin"),
     ]
-    role = models.CharField(max_length=50, choices=ROLE, default="STUDENT")
+    role = models.CharField(max_length=50, choices=ROLE, default="student")
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, default="man", choices=GENDER)
     phone = models.CharField(max_length=50)

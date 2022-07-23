@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'role', 'id', 'phone']
+        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender']
 
     # def validate_first_name(self, value):
     #     if not value:
@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     #     return value
     #
 
+
 class UserSignUpSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
@@ -37,9 +38,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-
     def save(self, **kwargs):
-
 
         user = User(
             username=self.validated_data['username'],
@@ -56,6 +55,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             user.is_superuser = True
             user.is_staff = True
 
+        if 'role' in self.validated_data:
+            user.role=self.validated_data['role']
         if 'email' in self.validated_data:
             user.email=self.validated_data['email']
         if 'first_name' in self.validated_data:
