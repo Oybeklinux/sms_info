@@ -11,5 +11,6 @@ router.register("specialty", SpecialtyViewSet)
 router.register("lesson_student", LessonStudentViewSet)
 
 urlpatterns = [
+    path('lesson/<int:pk>/', add_lessons),
     path('', include(router.urls)),
 ]

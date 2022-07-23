@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, status
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,24 +28,22 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
+@api_view(['POST'])
+def add_lessons(request, pk):
+    objects = []
+    for dt in request.data:
+        objects.append(dict(groupmonth=pk, date=dt))
+
+    serializer = LessonSerializer(data=objects, many=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-
-    def create(self, request, *args, **kwargs):
-        """
-        #checks if post request data is an array initializes serializer with many=True
-        else executes default CreateModelMixin.create function
-        """
-        is_many = isinstance(request.data, list)
-        if not is_many:
-            return super(LessonViewSet, self).create(request, *args, **kwargs)
-        else:
-            serializer = self.get_serializer(data=request.data, many=True)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class LessonStudentViewSet(viewsets.ModelViewSet):
