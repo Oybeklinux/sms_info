@@ -18,11 +18,11 @@ class UserSerializer(serializers.ModelSerializer):
         group_id_list = [obj[0] for obj in group_id_list]
         groups = Group.objects.filter(pk__in=group_id_list)
         groups = GroupSerializer(groups, many=True)
-        # print("group", group_id_list)
-        # grps = []
-        # for gr in groups.data:
-        #     del gr['groupmonth']
-        #     grps.append(gr)
+        print("group", group_id_list)
+        grps = []
+        for gr in groups.data:
+            del gr['groupmonth']
+            grps.append(gr)
 
         return {
             'token': token,
@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
             "work": user.work,
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
-            "groups": groups
+            "groups": grps
         }
 
     # def validate_first_name(self, value):
