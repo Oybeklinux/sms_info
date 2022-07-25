@@ -52,9 +52,9 @@ class LessonStudent(models.Model):
         unique_together = ('student', 'lesson')
 
 
-# class GroupStudent(models.Model):
-#     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_monthes")
-#     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_students")
-#
-#     def __str__(self):
-#         return str(self.month)
+class GroupStudent(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_monthes")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_students")
+
+    def __str__(self):
+        return f"{self.student} {self.group}"

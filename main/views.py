@@ -49,3 +49,8 @@ class LessonViewSet(viewsets.ModelViewSet):
 class LessonStudentViewSet(viewsets.ModelViewSet):
     queryset = LessonStudent.objects.all()
     serializer_class = LessonStudentSerializer
+
+
+class GroupStudentViewSet(viewsets.ModelViewSet):
+    queryset = GroupStudent.objects.all()
+    serializer_class = GroupStudentSerializer

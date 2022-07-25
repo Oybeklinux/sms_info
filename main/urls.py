@@ -9,6 +9,7 @@ router.register("groupmonth", GroupMonthViewSet)
 router.register("lesson", LessonViewSet)
 router.register("specialty", SpecialtyViewSet)
 router.register("lesson_student", LessonStudentViewSet)
+router.register("group_student", GroupStudentViewSet)
 
 urlpatterns = [
     path('lesson/<int:pk>/', add_lessons),

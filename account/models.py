@@ -31,6 +31,8 @@ class User(AbstractUser):
     surname = models.CharField(max_length=50)
     study = models.TextField(blank=True, null=True)
     work = models.TextField(blank=True, null=True)
+    paid_by_parents = models.BooleanField(default=True)
+
 
     def __str__(self):
         return self.username

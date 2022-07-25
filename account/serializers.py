@@ -1,13 +1,47 @@
 from rest_framework import serializers
 from .models import *
-
+from main.models import GroupStudent, Group
+from main.serializers import GroupSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     # phone = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work']
+        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents']
+
+    def to_representation(self, instance):
+        token = Token.objects.filter(user=instance).values('key')[0]
+        token = token['key']
+        user = instance
+        group_id_list = GroupStudent.objects.filter(student=user).values_list('group_id')
+        group_id_list = [obj[0] for obj in group_id_list]
+        groups = Group.objects.filter(pk__in=group_id_list)
+        groups = GroupSerializer(groups, many=True)
+        # print("group", group_id_list)
+        # grps = []
+        # for gr in groups.data:
+        #     del gr['groupmonth']
+        #     grps.append(gr)
+
+        return {
+            'token': token,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "user_id": user.pk,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "surname": user.surname,
+            "gender": user.gender,
+            "phone": user.phone,
+            "telegram": user.telegram,
+            "dob": user.dob,
+            "work": user.work,
+            "study": user.study,
+            "paid_by_parents": user.paid_by_parents,
+            "groups": groups
+        }
 
     # def validate_first_name(self, value):
     #     if not value:
@@ -33,7 +67,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password2', 'role', 'dob',
-                  'first_name', 'last_name', 'surname', 'gender', 'phone', 'telegram']
+                  'first_name', 'last_name', 'surname', 'gender', 'phone', 'telegram', 'work', 'study', 'paid_by_parents']
         extra_kwargs = {
             'password': {'write_only': True}
         }

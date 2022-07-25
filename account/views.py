@@ -14,33 +14,15 @@ from rest_framework.authtoken.views import ObtainAuthToken
 def profile(request):
     try:
         token = request.META.get('HTTP_AUTHORIZATION')
-        print(token)
         token = token.lstrip("Token ")
-        print(token)
         user = User.objects.get(auth_token=token)
-        print(user)
     except Exception as error:
         print(error)
         return Response({
             "error": "No such user"
         })
-
-    return Response({
-        'token': token,
-        "username": user.username,
-        "email": user.email,
-        "role": user.role,
-        "user_id": user.pk,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "surname": user.surname,
-        "gender": user.gender,
-        "phone": user.phone,
-        "telegram": user.telegram,
-        "dob": user.dob,
-        "work": user.work,
-        "study": user.study
-    })
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
 
 
 class UserSignUpView(generics.GenericAPIView):
