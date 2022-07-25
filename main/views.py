@@ -42,6 +42,19 @@ def add_lessons(request, pk):
 
 
 @api_view(['POST'])
+def add_student_to_group(request, group_id):
+    objects = []
+    for student in request.data:
+        objects.append(dict(student=student, group=group_id))
+
+    serializer = GroupStudentSerializer(data=objects, many=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
 def add_hw_and_is_available(request, pk):
     objects = []
     for obj in request.data:

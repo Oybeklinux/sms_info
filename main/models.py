@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 
 from django.db import models
 
@@ -55,6 +56,10 @@ class LessonStudent(models.Model):
 class GroupStudent(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_monthes")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_students")
+    created = models.DateField(auto_now_add=True, null=True)
+
+    class Meta:
+        unique_together = ('created', 'student', 'group')
 
     def __str__(self):
         return f"{self.student} {self.group}"
