@@ -41,6 +41,28 @@ def add_lessons(request, pk):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@api_view(['POST'])
+def add_hw_and_is_available(request, pk):
+    objects = []
+    for obj in request.data:
+        hw = obj["homework_done"]
+        is_av = obj["is_available"]
+        student = obj["student_id"]
+
+        objects.append(dict(
+            homework_done=hw,
+            is_available=is_av,
+            student=student,
+            lesson=pk
+        ))
+
+    serializer = LessonStudentSerializer(data=objects, many=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer

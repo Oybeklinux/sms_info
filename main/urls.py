@@ -13,5 +13,6 @@ router.register("group_student", GroupStudentViewSet)
 
 urlpatterns = [
     path('lesson/<int:pk>/', add_lessons),
+    path('lesson_student/<int:pk>/', add_hw_and_is_available),
     path('', include(router.urls)),
 ]
