@@ -54,6 +54,25 @@ class GroupMonthSerializer(serializers.ModelSerializer):
         }
 
 
+# class GroupStudentSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = GroupStudent
+#         fields = '__all__'
+#
+#     def to_representation(self, instance): #group
+#         students = GroupStudent.objects.filter(group=instance).order_by('user__surname').values()
+#
+#         return {
+#             "id": instance.id,
+#             "month": instance.month,
+#             "name": instance.name,
+#             "group": instance.group.id,
+#             "students": students
+#         }
+
+
+
 class SpecialtySerializer(serializers.ModelSerializer):
 
     class Meta:

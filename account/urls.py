@@ -14,4 +14,5 @@ urlpatterns = [
     path('signup/', UserSignUpView.as_view()),
     path('login/', LoginView.as_view(), name='auth-token'),
     path('logout/', LogoutView.as_view()),
+    path('profile/', profile)
 ]

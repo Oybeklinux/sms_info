@@ -1,12 +1,46 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, status
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from rest_framework.authtoken.views import ObtainAuthToken
+
+
+@api_view(['GET'])
+def profile(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION')
+        print(token)
+        token = token.lstrip("Token ")
+        print(token)
+        user = User.objects.get(auth_token=token)
+        print(user)
+    except Exception as error:
+        print(error)
+        return Response({
+            "error": "No such user"
+        })
+
+    return Response({
+        'token': token,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "user_id": user.pk,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "surname": user.surname,
+        "gender": user.gender,
+        "phone": user.phone,
+        "telegram": user.telegram,
+        "dob": user.dob,
+        "work": user.work,
+        "study": user.study
+    })
 
 
 class UserSignUpView(generics.GenericAPIView):

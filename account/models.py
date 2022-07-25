@@ -29,6 +29,8 @@ class User(AbstractUser):
     phone = models.CharField(max_length=50)
     telegram = models.CharField(max_length=50, null=True, blank=True)
     surname = models.CharField(max_length=50)
+    study = models.TextField(blank=True, null=True)
+    work = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.username
