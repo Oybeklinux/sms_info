@@ -31,7 +31,10 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def add_lessons(request, pk):
     objects = []
-    for dt in request.data:
+    if 'date' not in request.data:
+        raise ValueError('date required')
+
+    for dt in request.data['date']:
         objects.append(dict(groupmonth=pk, date=dt))
 
     serializer = LessonSerializer(data=objects, many=True)
@@ -44,7 +47,10 @@ def add_lessons(request, pk):
 @api_view(['POST'])
 def add_student_to_group(request, group_id):
     objects = []
-    for student in request.data:
+    if 'students' not in request.data:
+        raise ValueError('students required')
+
+    for student in request.data['students']:
         objects.append(dict(student=student, group=group_id))
 
     serializer = GroupStudentSerializer(data=objects, many=True)
