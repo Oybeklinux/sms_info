@@ -3,6 +3,14 @@ from .models import *
 from main.models import GroupStudent, Group
 from main.serializers import GroupSerializer
 
+
+class PeopleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work']
+
+
 class UserSerializer(serializers.ModelSerializer):
     # phone = serializers.CharField(required=True)
 
@@ -18,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         group_id_list = [obj[0] for obj in group_id_list]
         groups = Group.objects.filter(pk__in=group_id_list)
         groups = GroupSerializer(groups, many=True)
-        print("group", group_id_list)
+
         grps = []
         for gr in groups.data:
             del gr['groupmonth']

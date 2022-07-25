@@ -90,22 +90,22 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 
-# class TeacherViewSet(viewsets.ModelViewSet):
-#     queryset = Teacher.objects.all()
-#     serializer_class = TeacherSerializer
-#     permission_classes = [IsAuthenticatedOrReadOnly]
-#     http_method_names = ['get', 'put', 'patch', 'delete']
-#
-#
-# class StudentViewSet(viewsets.ModelViewSet):
-#     queryset = Student.objects.all()
-#     serializer_class = StudentSerializer
-#     permission_classes = [IsAuthenticatedOrReadOnly]
-#     http_method_names = ['get', 'put', 'patch', 'delete']
-#
-#
-# class PayerViewSet(viewsets.ModelViewSet):
-#     queryset = Payer.objects.all()
-#     serializer_class = PayerSerializer
-#     permission_classes = [IsAuthenticatedOrReadOnly]
-#     http_method_names = ['get', 'put', 'patch', 'delete']
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(role="teacher")
+    serializer_class = PeopleSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get']
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(role="student")
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get']
+
+
+class PayerViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(role="payer")
+    serializer_class = PeopleSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    http_method_names = ['get']

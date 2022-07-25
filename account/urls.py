@@ -3,11 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-# router.register("teacher", TeacherViewSet)
-# router.register("student", StudentViewSet)
-# router.register("payer", PayerViewSet)
+router.register("teacher", TeacherViewSet)
+router.register("student", StudentViewSet)
+router.register("payer", PayerViewSet)
 router.register("user", UserViewSet)
-
 
 urlpatterns = [
     path('', include(router.urls)),
