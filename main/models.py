@@ -22,6 +22,8 @@ class Group(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     even = models.BooleanField(default=True) # juft kunlarimi
 
+    def __str__(self):
+        return f"{self.name}"
 
 class GroupMonth(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_monthes")
@@ -42,6 +44,10 @@ class Lesson(models.Model):
     class Meta:
         unique_together = ('date', 'groupmonth')
 
+    def __str__(self):
+        return f"{self.theme}"
+
+
 
 class LessonStudent(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -51,6 +57,9 @@ class LessonStudent(models.Model):
 
     class Meta:
         unique_together = ('student', 'lesson')
+
+    def __str__(self):
+        return f"{self.student} {self.lesson}"
 
 
 class GroupStudent(models.Model):

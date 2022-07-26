@@ -97,3 +97,5 @@ class LessonStudentViewSet(viewsets.ModelViewSet):
 class GroupStudentViewSet(viewsets.ModelViewSet):
     queryset = GroupStudent.objects.all()
     serializer_class = GroupStudentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['group']
