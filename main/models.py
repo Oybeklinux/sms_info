@@ -25,6 +25,7 @@ class Group(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+
 class GroupMonth(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_monthes")
     month = models.DateField(auto_now_add=True)
@@ -46,7 +47,6 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.theme}"
-
 
 
 class LessonStudent(models.Model):

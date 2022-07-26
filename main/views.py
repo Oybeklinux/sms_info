@@ -63,10 +63,14 @@ def add_student_to_group(request, group_id):
 @api_view(['POST'])
 def add_hw_and_is_available(request, pk):
     objects = []
-    for obj in request.data:
-        hw = obj["homework_done"]
-        is_av = obj["is_available"]
-        student = obj["student_id"]
+    print(request.data)
+    if 'students' not in request.data:
+        raise ValueError('students required')
+
+    for obj in request.data['students']:
+        hw = obj["homework_done"] if 'homework_done' in obj else False
+        is_av = obj["is_available"] if 'is_available' in obj else False
+        student = obj["student"]
 
         objects.append(dict(
             homework_done=hw,
