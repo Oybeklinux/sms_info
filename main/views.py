@@ -83,7 +83,7 @@ def add_hw_and_is_available(request, pk):
 
 
 class LessonViewSet(viewsets.ModelViewSet):
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.all().order_by('date')
     serializer_class = LessonSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['groupmonth']
