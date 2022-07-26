@@ -98,7 +98,7 @@ class GroupStudentSerializer(serializers.ModelSerializer):
             "id": instance.id,
             "created": instance.created,
             "group": instance.group.id,
-            "user_id": user.pk,
+            "student": user.pk,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "surname": user.surname,
