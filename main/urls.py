@@ -16,4 +16,5 @@ urlpatterns = [
     path('group_student/<int:group_id>', add_student_to_group),
     path('', include(router.urls)),
     path('lesson_student/<int:pk>/', add_hw_and_is_available),
+    path('send_sms/<int:lesson_id>/', send_sms)
 ]

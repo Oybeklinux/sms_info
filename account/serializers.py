@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents']
+        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents', 'payer']
 
     def to_representation(self, instance):
         token = Token.objects.filter(user=instance).values('key')
@@ -51,7 +51,8 @@ class UserSerializer(serializers.ModelSerializer):
             "work": user.work,
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
-            "groups": grps
+            "groups": grps,
+            "payer": user.payer
         }
 
     # def validate_first_name(self, value):

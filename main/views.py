@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
+
+from .helpers import send_otp_to_phone
 from .serializers import *
 from rest_framework.authtoken.views import ObtainAuthToken
 
@@ -92,8 +94,6 @@ def add_hw_and_is_available(request, pk):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
-
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all().order_by('date')
     serializer_class = LessonSerializer
@@ -111,3 +111,32 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
     serializer_class = GroupStudentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['group']
+
+
+@api_view(['POST'])
+def send_sms(request, lesson_id):
+    lessons = LessonStudent.objects.filter(lesson=lesson_id)
+    if lessons:
+        for lesson in lessons:
+
+            if not lesson.sms_sent:
+                student = lesson.student
+                if not student.paid_by_parents:
+                    phone = lesson.student.phone
+                else:
+                    phone = lesson.student.payer.phone
+                message = f"""
+Название урока: {lesson.lesson.theme if lesson.lesson.theme else ""}
+Число: {lesson.lesson.date}
+Домашняя работа: {"сделана" if lesson.homework_done else "не сделана"} 
+Присутствие на уроке: {"был(а)" if lesson.is_available else "не был(а)"}
+"""
+                print(message)
+                sms = send_otp_to_phone(phone, message)
+                if sms:
+                    lesson.sms_sent = True
+                    lesson.save()
+        serializer = LessonStudentSerializer(lessons, many=True)
+        return Response({"students": serializer.data}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "Not found"}, status=status.HTTP_404_NOT_FOUND)

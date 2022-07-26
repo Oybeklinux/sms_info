@@ -54,9 +54,7 @@ class LessonStudent(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     homework_done = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
-
-    # class Meta:
-    #     unique_together = ('student', 'lesson')
+    sms_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.student} {self.lesson}"

@@ -32,7 +32,7 @@ class User(AbstractUser):
     study = models.TextField(blank=True, null=True)
     work = models.TextField(blank=True, null=True)
     paid_by_parents = models.BooleanField(default=True)
-
+    payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.username
