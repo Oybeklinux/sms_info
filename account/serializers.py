@@ -19,8 +19,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents']
 
     def to_representation(self, instance):
-        token = Token.objects.filter(user=instance).values('key')[0]
-        token = token['key']
+        token = Token.objects.filter(user=instance).values('key')
+        if token:
+            token = token[0]['key']
+        else:
+            token = None
         user = instance
         group_id_list = GroupStudent.objects.filter(student=user).values_list('group_id')
         group_id_list = [obj[0] for obj in group_id_list]
