@@ -60,30 +60,41 @@ def add_student_to_group(request, group_id):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def add_hw_and_is_available(request, pk):
-    objects = []
-    print(request.data)
-    if 'students' not in request.data:
-        raise ValueError('students required')
+    if request.method == 'POST':
+        objects = []
+        print(request.data)
+        if 'students' not in request.data:
+            raise ValueError('students required')
 
-    for obj in request.data['students']:
-        hw = obj["homework_done"] if 'homework_done' in obj else False
-        is_av = obj["is_available"] if 'is_available' in obj else False
-        student = obj["student"]
+        for obj in request.data['students']:
+            hw = obj["homework_done"] if 'homework_done' in obj else False
+            is_av = obj["is_available"] if 'is_available' in obj else False
+            student = obj["student"]
 
-        objects.append(dict(
-            homework_done=hw,
-            is_available=is_av,
-            student=student,
-            lesson=pk
-        ))
+            objects.append(dict(
+                homework_done=hw,
+                is_available=is_av,
+                student=student,
+                lesson=pk
+            ))
 
-    serializer = LessonStudentSerializer(data=objects, many=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
+        serializer = LessonStudentSerializer(data=objects, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == 'GET':
+        try:
+            lessons = LessonStudent.objects.filter(lesson=pk)
+            serializer = LessonStudentSerializer(lessons, many=True)
+            return Response({"students": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 class LessonViewSet(viewsets.ModelViewSet):

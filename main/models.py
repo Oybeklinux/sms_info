@@ -46,7 +46,7 @@ class Lesson(models.Model):
         unique_together = ('date', 'groupmonth')
 
     def __str__(self):
-        return f"{self.theme}"
+        return f"{self.date}"
 
 
 class LessonStudent(models.Model):
