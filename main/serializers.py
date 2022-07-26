@@ -85,6 +85,25 @@ class LessonStudentSerializer(serializers.ModelSerializer):
         model = LessonStudent
         fields = '__all__'
 
+    def create(self, validated_data):
+        try:
+            lesson = LessonStudent.objects.get(
+                student=validated_data.get('student', None),
+                lesson=validated_data.get('lesson', None)
+            )
+            lesson.homework_done=validated_data.get('homework_done', None)
+            lesson.is_available=validated_data.get('is_available', None),
+            lesson.save()
+            return lesson
+        except Exception:
+            lesson = LessonStudent.objects.create(
+                student=validated_data.get('student', None),
+                homework_done=validated_data.get('homework_done', None),
+                is_available=validated_data.get('is_available', None),
+                lesson=validated_data.get('lesson', None)
+                )
+        return lesson
+
 
 class GroupStudentSerializer(serializers.ModelSerializer):
 

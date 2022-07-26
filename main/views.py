@@ -64,7 +64,6 @@ def add_student_to_group(request, group_id):
 def add_hw_and_is_available(request, pk):
     if request.method == 'POST':
         objects = []
-        print(request.data)
         if 'students' not in request.data:
             raise ValueError('students required')
 
@@ -83,7 +82,6 @@ def add_hw_and_is_available(request, pk):
         serializer = LessonStudentSerializer(data=objects, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         try:
@@ -91,7 +89,6 @@ def add_hw_and_is_available(request, pk):
             serializer = LessonStudentSerializer(lessons, many=True)
             return Response({"students": serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
-            print(error)
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

@@ -55,8 +55,8 @@ class LessonStudent(models.Model):
     homework_done = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
 
-    class Meta:
-        unique_together = ('student', 'lesson')
+    # class Meta:
+    #     unique_together = ('student', 'lesson')
 
     def __str__(self):
         return f"{self.student} {self.lesson}"
