@@ -117,26 +117,42 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
 def send_sms(request, lesson_id):
     lessons = LessonStudent.objects.filter(lesson=lesson_id)
     if lessons:
+        errors = []
         for lesson in lessons:
 
             if not lesson.sms_sent:
                 student = lesson.student
                 if not student.paid_by_parents:
-                    phone = lesson.student.phone
+                    if lesson.student.phone:
+                        phone = lesson.student.phone
+                    else:
+                        errors.append({
+                            "student_id": student.id,
+                            "message": "No student phone provided"
+                        })
+                        continue
                 else:
-                    phone = lesson.student.payer.phone
+                    if lesson.student.payer and lesson.student.payer.phone:
+                        phone = lesson.student.payer.phone
+                    else:
+                        errors.append({
+                            "student_id": student.id,
+                            "message": "No payer/phone provided"
+                        })
+                        continue
+
                 message = f"""
 Название урока: {lesson.lesson.theme if lesson.lesson.theme else ""}
 Число: {lesson.lesson.date}
 Домашняя работа: {"сделана" if lesson.homework_done else "не сделана"} 
 Присутствие на уроке: {"был(а)" if lesson.is_available else "не был(а)"}
 """
-                print(message)
+                # print(message)
                 sms = send_otp_to_phone(phone, message)
                 if sms:
                     lesson.sms_sent = True
                     lesson.save()
         serializer = LessonStudentSerializer(lessons, many=True)
-        return Response({"students": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"students": serializer.data, "errors": errors}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "Not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -42,12 +42,12 @@ def send_otp_to_phone(phone_number, message):
     session.mount("https://", adapter)
     try:
         response = session.request(method='POST', url=url, json=credentials)
-        print(response.text)
+        # print(response.text)
         data = json.loads(response.text)
         if data['success']:
             return True
 
-        print("Kutilmagan xatolik")
+        # print("Kutilmagan xatolik")
         return None
     except Exception as exception:
         print(exception)
