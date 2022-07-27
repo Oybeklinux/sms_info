@@ -29,8 +29,8 @@ class User(AbstractUser):
     phone = models.CharField(max_length=50)
     telegram = models.CharField(max_length=50, null=True, blank=True)
     surname = models.CharField(max_length=50)
-    study = models.TextField(blank=True, null=True)
-    work = models.TextField(blank=True, null=True)
+    study = models.BooleanField(default=None, null=True)
+    work = models.BooleanField(default=None, null=True)
     paid_by_parents = models.BooleanField(default=True)
     payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
 

@@ -52,8 +52,8 @@ class Lesson(models.Model):
 class LessonStudent(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    homework_done = models.BooleanField(default=False)
-    is_available = models.BooleanField(default=True)
+    homework_done = models.BooleanField(default=None, null=True)
+    is_available = models.BooleanField(default=None, null=True)
     sms_sent = models.BooleanField(default=False)
 
     def __str__(self):
