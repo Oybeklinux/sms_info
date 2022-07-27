@@ -31,7 +31,7 @@ class User(AbstractUser):
     surname = models.CharField(max_length=50)
     study = models.BooleanField(default=None, null=True)
     work = models.BooleanField(default=None, null=True)
-    paid_by_parents = models.BooleanField(default=True)
+    paid_by_parents = models.BooleanField(default=False)
     payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
