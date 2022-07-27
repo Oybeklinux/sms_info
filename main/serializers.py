@@ -85,6 +85,31 @@ class LessonStudentSerializer(serializers.ModelSerializer):
         model = LessonStudent
         fields = '__all__'
 
+    def to_representation(self, instance):
+        lesson = instance
+        user = User.objects.get(id=instance.student.id)
+        return {
+            "id": lesson.id,
+            "homework_done": lesson.homework_done,
+            "is_available": lesson.is_available,
+            "sms_sent": lesson.sms_sent,
+            "lesson": lesson.id,
+            "student": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "surname": user.surname,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "gender": user.gender,
+            "phone": user.phone,
+            "telegram": user.telegram,
+            "dob": user.dob,
+            "work": user.work,
+            "study": user.study,
+            "paid_by_parents": user.paid_by_parents,
+        }
+
     def create(self, validated_data):
         try:
             lesson = LessonStudent.objects.get(

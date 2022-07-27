@@ -89,7 +89,7 @@ def add_hw_and_is_available(request, pk):
         try:
             lessons = LessonStudent.objects.filter(lesson=pk)
             serializer = LessonStudentSerializer(lessons, many=True)
-            return Response({"students": serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as error:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
