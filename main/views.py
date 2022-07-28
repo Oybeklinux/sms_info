@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-
+import re
 from .helpers import send_otp_to_phone
 from .serializers import *
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -117,16 +117,17 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send_sms(request, lesson_id):
-    lessons = LessonStudent.objects.filter(lesson=lesson_id)
-    if lessons:
+    lessonstudents = LessonStudent.objects.filter(lesson=lesson_id)
+    if lessonstudents:
         errors = []
-        for lesson in lessons:
+        for lessonstudent in lessonstudents:
 
-            if not lesson.sms_sent:
-                student = lesson.student
+            if not lessonstudent.sms_sent:
+                student = lessonstudent.student
+
                 if not student.paid_by_parents:
-                    if lesson.student.phone:
-                        phone = lesson.student.phone
+                    if lessonstudent.student.phone:
+                        phone = lessonstudent.student.phone
                     else:
                         errors.append({
                             "student_id": student.id,
@@ -134,27 +135,38 @@ def send_sms(request, lesson_id):
                         })
                         continue
                 else:
-                    if lesson.student.payer and lesson.student.payer.phone:
-                        phone = lesson.student.payer.phone
-                    else:
+                    if not lessonstudent.student.payer:
                         errors.append({
                             "student_id": student.id,
-                            "message": "No payer/phone provided"
+                            "message": "No payer is provided"
+                        })
+                        continue
+                    if not lessonstudent.student.payer.phone:
+                        errors.append({
+                            "student_id": student.id,
+                            "message": "No phone of payer is provided"
                         })
                         continue
 
-                message = f"""
-Название урока: {lesson.lesson.theme if lesson.lesson.theme else ""}
-Число: {lesson.lesson.date}
-Домашняя работа: {"сделана" if lesson.homework_done else "не сделана"} 
-Присутствие на уроке: {"был(а)" if lesson.is_available else "не был(а)"}
-"""
-                # print(message)
-                sms = send_otp_to_phone(phone, message)
-                if sms:
-                    lesson.sms_sent = True
-                    lesson.save()
-        serializer = LessonStudentSerializer(lessons, many=True)
+                    phone = lessonstudent.student.payer.phone
+
+                message = f'Название урока: {lessonstudent.lesson.theme if lessonstudent.lesson.theme else ""}\n' \
+                          f'Число: {lessonstudent.lesson.date}\n' \
+                          f'Домашняя работа: {"сделана" if lessonstudent.homework_done else "не сделана"}\n' \
+                          f'Присутствие на уроке: {"был(а)" if lessonstudent.is_available else "не был(а)"}'
+                phone = re.sub(r'[^\d]', '', phone)
+                ok, error = send_otp_to_phone(phone, message)
+
+                if ok:
+                    lessonstudent.sms_sent = True
+                    lessonstudent.save()
+                else:
+                    errors.append({
+                        "student_id": student.id,
+                        "message": error
+                    })
+                    continue
+        serializer = LessonStudentSerializer(lessonstudents, many=True)
         return Response({"students": serializer.data, "errors": errors}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "Not found"}, status=status.HTTP_404_NOT_FOUND)

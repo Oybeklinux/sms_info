@@ -44,13 +44,14 @@ def send_otp_to_phone(phone_number, message):
         response = session.request(method='POST', url=url, json=credentials)
         # print(response.text)
         data = json.loads(response.text)
+        print(data)
         if data['success']:
-            return True
-
-        # print("Kutilmagan xatolik")
-        return None
+            return True, None
+        else:
+            error = data['reason'] if 'reason' in data else 'Unknown error'
+            error += f" {phone_number}"
+            return False, error
     except Exception as exception:
-        print(exception)
-        return None
+        return False, str(exception)
 
 
