@@ -181,3 +181,32 @@ class GroupStudentSerializer(serializers.ModelSerializer):
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
         }
+
+
+class GroupStudentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GroupStudent
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        user = User.objects.get(id=instance.student.id)
+        return {
+            "id": instance.id,
+            "created": instance.created,
+            "group": instance.group.id if hasattr(instance, 'group') else None,
+            "student": user.pk,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "surname": user.surname,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "gender": user.gender,
+            "phone": user.phone,
+            "telegram": user.telegram,
+            "dob": user.dob,
+            "work": user.work,
+            "study": user.study,
+            "paid_by_parents": user.paid_by_parents,
+        }

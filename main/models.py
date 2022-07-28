@@ -69,4 +69,4 @@ class GroupStudent(models.Model):
         unique_together = ('created', 'student', 'group')
 
     def __str__(self):
-        return f"{self.student} {self.group}"
+        return f"{self.student}"

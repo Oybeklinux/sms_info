@@ -1,15 +1,15 @@
-from django.shortcuts import render
-from rest_framework import generics, viewsets, status
-from rest_framework.authtoken.models import Token
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 import re
 from .helpers import send_otp_to_phone
 from .serializers import *
-from rest_framework.authtoken.views import ObtainAuthToken
+from django.db.models import Q
+
+from account.models import User
+
+from account.serializers import UserSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -46,20 +46,38 @@ def add_lessons(request, pk):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def add_student_to_group(request, group_id):
-    objects = []
-    if 'students' not in request.data:
-        raise ValueError('students required')
+    if request.method == 'POST':
+        objects = []
+        if 'students' not in request.data:
+            raise ValueError('students required')
 
-    for student in request.data['students']:
-        objects.append(dict(student=student, group=group_id))
+        for student in request.data['students']:
+            objects.append(dict(student=student, group=group_id))
 
-    serializer = GroupStudentSerializer(data=objects, many=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
+        serializer = GroupStudentSerializer(data=objects, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == 'GET':
+        users = User.objects.filter(Q(group=group_id)).values('id', 'group')
+        users1 = User.objects.filter(Q(group_monthes__isnull=True) and Q(role='student')).values('id', 'group')
+        users = users.union(users1)
+        users = users.order_by('-group')
+
+        groupstudents = students2gstudents(users)
+        serializer = GroupStudentSerializer(groupstudents, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+def students2gstudents(users):
+    groupstudents = []
+
+    for user in users:
+        groupstudents.append(GroupStudent(student_id=user['id'], group_id=user['group']))
+    return groupstudents
 
 
 def gstudents2lstudents(groupstudents, lesson):
