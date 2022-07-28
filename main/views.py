@@ -62,6 +62,21 @@ def add_student_to_group(request, group_id):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+def gstudents2lstudents(groupstudents, lesson):
+    lessonstudents = []
+
+    for groupstudent in groupstudents:
+        lessonstudent = LessonStudent(
+            homework_done=False,
+            is_available=False,
+            lesson=lesson,
+            sms_sent=False,
+            student=groupstudent.student
+        )
+        lessonstudents.append(lessonstudent)
+    return lessonstudents
+
+
 @api_view(['POST', 'GET'])
 def add_hw_and_is_available(request, pk):
     if request.method == 'POST':
@@ -89,10 +104,21 @@ def add_hw_and_is_available(request, pk):
         return Response(objects, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         try:
-            lessons = LessonStudent.objects.filter(lesson=pk)
-            serializer = LessonStudentSerializer(lessons, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            lessonstudents = LessonStudent.objects.filter(lesson=pk)
+
+            if lessonstudents:
+                serializer = LessonStudentSerializer(lessonstudents, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                lesson = Lesson.objects.get(pk=pk)
+                group = lesson.groupmonth.group
+                groupstudents = GroupStudent.objects.filter(group=group)
+                lessonstudents = gstudents2lstudents(groupstudents, lesson)
+                serializer = LessonStudentSerializer(lessonstudents, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
         except Exception as error:
+            print(error)
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -103,9 +129,10 @@ class LessonViewSet(viewsets.ModelViewSet):
     filterset_fields = ['groupmonth']
 
 
-class LessonStudentViewSet(viewsets.ModelViewSet):
-    queryset = LessonStudent.objects.all()
-    serializer_class = LessonStudentSerializer
+# class LessonStudentViewSet(viewsets.ModelViewSet):
+#     queryset = LessonStudent.objects.all()
+#     serializer_class = LessonStudentSerializer
+#     # http_method_names = ['get', 'post']
 
 
 class GroupStudentViewSet(viewsets.ModelViewSet):
