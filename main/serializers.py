@@ -86,14 +86,14 @@ class LessonStudentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
-        lesson = instance
+        lessonstudent = instance
         user = User.objects.get(id=instance.student.id)
         return {
-            "id": lesson.id,
-            "homework_done": lesson.homework_done,
-            "is_available": lesson.is_available,
-            "sms_sent": lesson.sms_sent,
-            "lesson": lesson.id,
+            "id": lessonstudent.id,
+            "homework_done": lessonstudent.homework_done,
+            "is_available": lessonstudent.is_available,
+            "sms_sent": lessonstudent.sms_sent,
+            "lesson": lessonstudent.lesson.id,
             "student": user.id,
             "first_name": user.first_name,
             "last_name": user.last_name,
@@ -111,23 +111,18 @@ class LessonStudentSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        try:
-            lesson = LessonStudent.objects.get(
-                student=validated_data.get('student', None),
-                lesson=validated_data.get('lesson', None)
-            )
-            lesson.homework_done=validated_data.get('homework_done', None)
-            lesson.is_available=validated_data.get('is_available', None),
-            lesson.save()
-            return lesson
-        except Exception:
-            lesson = LessonStudent.objects.create(
-                student=validated_data.get('student', None),
-                homework_done=validated_data.get('homework_done', None),
-                is_available=validated_data.get('is_available', None),
-                lesson=validated_data.get('lesson', None)
-                )
-        return lesson
+        obj, created = LessonStudent.objects.update_or_create(
+            student=validated_data.get('student', None),
+            lesson=validated_data.get('lesson', None),
+            defaults={
+                'homework_done': validated_data.get('homework_done', None),
+                'is_available': validated_data.get('is_available', None)
+            },
+        )
+
+        return obj
+
+
 
 
 class GroupStudentSerializer(serializers.ModelSerializer):

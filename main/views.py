@@ -74,17 +74,19 @@ def add_hw_and_is_available(request, pk):
             is_av = obj["is_available"] if 'is_available' in obj else False
             student = obj["student"]
 
-            objects.append(dict(
+            object = dict(
                 homework_done=hw,
                 is_available=is_av,
                 student=student,
                 lesson=pk
-            ))
+            )
+
+            objects.append(object)
 
         serializer = LessonStudentSerializer(data=objects, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(objects, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         try:
             lessons = LessonStudent.objects.filter(lesson=pk)
