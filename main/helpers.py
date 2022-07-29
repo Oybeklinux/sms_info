@@ -6,7 +6,12 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 from requests.packages.urllib3.util import ssl_
+import logging
+logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 
+logger = logging.getLogger(__name__)
+
+# logging.config.fileConfig('/path/to/logging.conf')
 env = environ.Env()
 environ.Env.read_env()
 
@@ -44,14 +49,16 @@ def send_otp_to_phone(phone_number, message):
         response = session.request(method='POST', url=url, json=credentials)
         # print(response.text)
         data = json.loads(response.text)
-        print(data)
+        logger.info(data)
         if data['success']:
             return True, None
         else:
             error = data['reason'] if 'reason' in data else 'Unknown error'
             error += f" {phone_number}"
+            logger.error(error)
             return False, error
     except Exception as exception:
+        logger.error(exception)
         return False, str(exception)
 
 

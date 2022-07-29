@@ -1,0 +1,5 @@
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
+DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
+INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
