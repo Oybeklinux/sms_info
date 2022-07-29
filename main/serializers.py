@@ -20,7 +20,8 @@ class GroupSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         monthes = GroupMonth.objects.filter(group=instance).order_by('month').values()
         # monthes = [month[0] for month in monthes]
-
+        total = GroupStudent.objects.filter(group=instance).count()
+        print( "group", instance.name, "total:", total)
         return {
             "id": instance.id,
             "created": instance.created,
@@ -33,7 +34,8 @@ class GroupSerializer(serializers.ModelSerializer):
             "specialty_name": instance.specialty.name if instance.specialty else None,
             "teacher_id": instance.teacher.id if instance.specialty else None,
             "teacher_name": f"{instance.teacher.surname} {instance.teacher.first_name}"  if instance.specialty else None,
-            "groupmonth": monthes
+            "groupmonth": monthes,
+            "students_num": total
         }
 
 

@@ -63,7 +63,7 @@ def add_student_to_group(request, group_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         users = User.objects.filter(Q(group=group_id)).values('id', 'group')
-        users1 = User.objects.filter(Q(group_monthes__isnull=True) and Q(role='student')).values('id', 'group')
+        users1 = User.objects.filter(~Q(group=group_id) and Q(role='student')).values('id', 'group')
         users = users.union(users1)
         users = users.order_by('-group')
 
