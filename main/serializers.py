@@ -212,3 +212,11 @@ class GroupStudentSerializer(serializers.ModelSerializer):
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
         }
+
+    def create(self, validated_data):
+        obj, created = GroupStudent.objects.update_or_create(
+            student=validated_data.get('student', None),
+            group=validated_data.get('group', None),
+        )
+
+        return obj

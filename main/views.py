@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -49,6 +50,9 @@ def add_lessons(request, pk):
 @api_view(['POST', 'GET'])
 def add_student_to_group(request, group_id):
     if request.method == 'POST':
+        if Group.objects.filter(id=group_id).count() == 0:
+            return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
+
         objects = []
         if 'students' not in request.data:
             raise ValueError('students required')
@@ -62,12 +66,24 @@ def add_student_to_group(request, group_id):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
-        users = User.objects.filter(Q(group=group_id)).values('id', 'group')
-        users1 = User.objects.filter(~Q(group=group_id) and Q(role='student')).values('id', 'group')
-        users = users.union(users1)
-        users = users.order_by('-group')
+        try:
+            if Group.objects.get(id=group_id):
+                pass
+        except Exception as error:
+            print(error)
+            return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
+
+        users = GroupStudent.objects.filter(Q(group=group_id)).values('student', 'group')
+        users_id = [user['student'] for user in users]
+
+        users1 = User.objects.exclude(id__in=users_id)
+        users1 = users1.filter(role='student')
+        users1 = [{'student': user.id, "group": None} for user in users1]
+
+        users = list(users) + users1
 
         groupstudents = students2gstudents(users)
+
         serializer = GroupStudentSerializer(groupstudents, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -76,7 +92,7 @@ def students2gstudents(users):
     groupstudents = []
 
     for user in users:
-        groupstudents.append(GroupStudent(student_id=user['id'], group_id=user['group']))
+        groupstudents.append(GroupStudent(student_id=user['student'], group_id=user['group']))
     return groupstudents
 
 
