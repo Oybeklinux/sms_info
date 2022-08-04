@@ -144,7 +144,7 @@ def add_hw_and_is_available(request, pk):
 
 
 class LessonViewSet(viewsets.ModelViewSet):
-    queryset = Lesson.objects.all().order_by('date')
+    queryset = Lesson.objects.all().order_by('id')
     serializer_class = LessonSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['groupmonth', 'id']
@@ -155,16 +155,23 @@ class LessonViewSet(viewsets.ModelViewSet):
             serializer = LessonSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()  # bulk save
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
         else:
-            datas = []
             groupmonth = data['groupmonth']
+            dates = [date.fromisoformat(dt) for dt in data['date']]
             for dt in data['date']:
-                datas.append({"date": dt, "groupmonth": groupmonth})
-            serializer = LessonSerializer(data=datas, many=True)
-            if serializer.is_valid():
-                serializer.save()  # bulk save
+                data = {"groupmonth": groupmonth, "date": dt}
+                serializer = LessonSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()  # bulk save
+
+            Lesson.objects.exclude(date__in=dates).delete()
+            lessons = Lesson.objects.filter(groupmonth=groupmonth)
+            serializer = LessonSerializer(lessons, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 # class LessonStudentViewSet(viewsets.ModelViewSet):
 #     queryset = LessonStudent.objects.all()
 #     serializer_class = LessonStudentSerializer
