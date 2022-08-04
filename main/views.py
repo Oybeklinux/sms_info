@@ -34,22 +34,6 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-@api_view(['POST'])
-def add_lessons(request, pk):
-    objects = []
-    if 'date' not in request.data:
-        raise ValueError('date required')
-
-    for dt in request.data['date']:
-        objects.append(dict(groupmonth=pk, date=dt))
-
-    serializer = LessonSerializer(data=objects, many=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 @api_view(['POST', 'GET'])
 def add_student_to_group(request, group_id):
     if request.method == 'POST':
@@ -163,9 +147,24 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all().order_by('date')
     serializer_class = LessonSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['groupmonth']
+    filterset_fields = ['groupmonth', 'id']
 
-
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        if not isinstance(data['date'], list):
+            serializer = LessonSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()  # bulk save
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            datas = []
+            groupmonth = data['groupmonth']
+            for dt in data['date']:
+                datas.append({"date": dt, "groupmonth": groupmonth})
+            serializer = LessonSerializer(data=datas, many=True)
+            if serializer.is_valid():
+                serializer.save()  # bulk save
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 # class LessonStudentViewSet(viewsets.ModelViewSet):
 #     queryset = LessonStudent.objects.all()
 #     serializer_class = LessonStudentSerializer
@@ -181,7 +180,6 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send_sms(request, lesson_id):
-    logger.info('+++ 1 +++')
     lessonstudents = LessonStudent.objects.filter(lesson=lesson_id)
     if lessonstudents:
         errors = []
