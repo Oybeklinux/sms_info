@@ -95,7 +95,7 @@ def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_ava
             credentials = {
                 "login": env('login'),
                 "password": env('password'),
-                "data": [{"phone": str(phone_number), "text": message}]
+                "data": json.dumps( [{"phone": str(phone_number), "text": message}])
             }
             url = env('url_swg')
         else:
@@ -110,18 +110,27 @@ def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_ava
         session = requests.session()
         adapter = TlsAdapter(ssl.OP_NO_SSLv2)
         session.mount("https://", adapter)
+
         try:
             response = session.request(method='POST', url=url, json=credentials)
 
             data = json.loads(response.text)
             logger.info(data)
-            if data['success']:
-                return True, None
+            if env('smsgateway') != '1':
+                if data['success']:
+                    return True, None
+                else:
+                   error = data['reason'] if 'reason' in data else 'Unknown error'
+                   error += f" {phone_number}"
+                   logger.error(error)
+                   return False, error
             else:
-                error = data['reason'] if 'reason' in data else 'Unknown error'
-                error += f" {phone_number}"
-                logger.error(error)
-                return False, error
+                if 'error' in data[0]:
+                    error = str(data[0])
+                    logger.error(error)
+                    return  False, error
+                else:
+                    return True, None
         except Exception as exception:
             logger.error(exception)
             return False, str(exception)
