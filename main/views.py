@@ -144,7 +144,7 @@ def add_hw_and_is_available(request, pk):
 
 
 class LessonViewSet(viewsets.ModelViewSet):
-    queryset = Lesson.objects.all().order_by('id')
+    queryset = Lesson.objects.all().order_by('date')
     serializer_class = LessonSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['groupmonth', 'id']
@@ -154,7 +154,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         if not isinstance(data['date'], list):
             serializer = LessonSerializer(data=data)
             if serializer.is_valid():
-                serializer.save()  # bulk save
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
@@ -183,6 +183,29 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
     serializer_class = GroupStudentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['group']
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        if not isinstance(data['student'], list):
+            serializer = GroupStudentSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()  # bulk save
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            group = data['group']
+            students = [st for st in data['student']]
+            for st in students:
+                data = {"group": group, "student": st}
+                serializer = GroupStudentSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+
+            GroupStudent.objects.exclude(student__in=students).delete()
+            groupstudents = GroupStudent.objects.filter(group=group)
+            serializer = GroupStudentSerializer(groupstudents, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
