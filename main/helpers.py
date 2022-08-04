@@ -78,52 +78,53 @@ class TlsAdapter(HTTPAdapter):
 
 
 def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_available=True, homework_done=True):
-
-    if not is_available:
-        message = message_available\
-            .replace("payer_name", payer_name)\
-            .replace("student_name",student_name)\
-            .replace("study_date", study_date)
-    elif not homework_done:
-        message = message_homework \
-            .replace("payer_name", payer_name) \
-            .replace("student_name", student_name) \
-            .replace("study_date", study_date)
-
-    if env('smsgateway') == '1':
-
-        credentials = {
-            "login": env('login'),
-            "password": env('password'),
-            "data": [{"phone": str(phone_number), "text": message}]
-        }
-        url = env('url_swg')
-    else:
-        credentials = {
-            "key": env("token"),
-            "phone": str(phone_number),
-            "message": message
-        }
-        url = env('url')
-    logger.info(url)
-    logger.info(credentials)
-    session = requests.session()
-    adapter = TlsAdapter(ssl.OP_NO_SSLv2)
-    session.mount("https://", adapter)
     try:
-        response = session.request(method='POST', url=url, json=credentials)
+        if not is_available:
+            message = message_available\
+                .replace("payer_name", payer_name)\
+                .replace("student_name",student_name)\
+                .replace("study_date", study_date)
+        elif not homework_done:
+            message = message_homework \
+                .replace("payer_name", payer_name) \
+                .replace("student_name", student_name) \
+                .replace("study_date", study_date)
 
-        data = json.loads(response.text)
-        logger.info(data)
-        if data['success']:
-            return True, None
+        if env('smsgateway') == '1':
+
+            credentials = {
+                "login": env('login'),
+                "password": env('password'),
+                "data": [{"phone": str(phone_number), "text": message}]
+            }
+            url = env('url_swg')
         else:
-            error = data['reason'] if 'reason' in data else 'Unknown error'
-            error += f" {phone_number}"
-            logger.error(error)
-            return False, error
-    except Exception as exception:
-        logger.error(exception)
-        return False, str(exception)
+            credentials = {
+                "key": env("token"),
+                "phone": str(phone_number),
+                "message": message
+            }
+            url = env('url')
+        logger.info(url)
+        logger.info(credentials)
+        session = requests.session()
+        adapter = TlsAdapter(ssl.OP_NO_SSLv2)
+        session.mount("https://", adapter)
+        try:
+            response = session.request(method='POST', url=url, json=credentials)
 
+            data = json.loads(response.text)
+            logger.info(data)
+            if data['success']:
+                return True, None
+            else:
+                error = data['reason'] if 'reason' in data else 'Unknown error'
+                error += f" {phone_number}"
+                logger.error(error)
+                return False, error
+        except Exception as exception:
+            logger.error(exception)
+            return False, str(exception)
+    except Exception as er:
+        logger.error(str(er))
 
