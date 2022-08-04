@@ -1,6 +1,7 @@
 from django.db.models.query import QuerySet
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 import re
@@ -32,47 +33,6 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-
-@api_view(['POST', 'GET'])
-def add_student_to_group(request, group_id):
-    if request.method == 'POST':
-        if Group.objects.filter(id=group_id).count() == 0:
-            return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
-
-        objects = []
-        if 'students' not in request.data:
-            raise ValueError('students required')
-
-        for student in request.data['students']:
-            objects.append(dict(student=student, group=group_id))
-
-        serializer = GroupStudentSerializer(data=objects, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    elif request.method == 'GET':
-        try:
-            if Group.objects.get(id=group_id):
-                pass
-        except Exception as error:
-            print(error)
-            return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
-
-        users = GroupStudent.objects.filter(Q(group=group_id)).values('student', 'group')
-        users_id = [user['student'] for user in users]
-
-        users1 = User.objects.exclude(id__in=users_id)
-        users1 = users1.filter(role='student')
-        users1 = [{'student': user.id, "group": None} for user in users1]
-
-        users = list(users) + users1
-
-        groupstudents = students2gstudents(users)
-
-        serializer = GroupStudentSerializer(groupstudents, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 def students2gstudents(users):
@@ -183,6 +143,33 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
     serializer_class = GroupStudentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['group']
+
+    def list(self, request):
+        group = request.query_params.get('group', None)
+        if not group:
+            serializer = GroupStudentSerializer(self.queryset, many=True)
+            return Response(serializer.data)
+        else:
+            try:
+                if Group.objects.get(id=int(group)):
+                    pass
+            except Exception as error:
+                print(error)
+                return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
+
+            users = GroupStudent.objects.filter(group=group).values('student', 'group')
+            users_id = [user['student'] for user in users]
+
+            users1 = User.objects.exclude(id__in=users_id)
+            users1 = users1.filter(role='student')
+            users1 = [{'student': user.id, "group": None} for user in users1]
+
+            users = list(users) + users1
+
+            groupstudents = students2gstudents(users)
+
+            serializer = GroupStudentSerializer(groupstudents, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def create(self, request, *args, **kwargs):
         data = request.data
