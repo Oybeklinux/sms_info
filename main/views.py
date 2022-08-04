@@ -9,8 +9,11 @@ from .serializers import *
 from django.db.models import Q
 
 from account.models import User
-
 from account.serializers import UserSerializer
+import logging
+
+logging.basicConfig(filename="log.txt", level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -178,6 +181,7 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send_sms(request, lesson_id):
+    logger.info('+++ 1 +++')
     lessonstudents = LessonStudent.objects.filter(lesson=lesson_id)
     if lessonstudents:
         errors = []
@@ -209,13 +213,15 @@ def send_sms(request, lesson_id):
                             "message": "No phone of payer is provided"
                         })
                         continue
+                    logger.info('+++ 2 +++')
                     payer = lessonstudent.student.payer
                     phone = payer.phone
                     payer_name = f"{payer.surname} {payer.first_name}"
+                logger.info('+++ 3 +++')
                 student_name = f"{student.surname} {student.first_name}"
                 study_date = lessonstudent.lesson.date.strftime("%d-%m-%Y")
                 phone = re.sub(r'[^\d]', '', phone)
-
+                logger.info('+++ 4 +++')
                 data = {
                     "phone_number": phone,
                     "payer_name": payer_name,
@@ -225,7 +231,7 @@ def send_sms(request, lesson_id):
                     "homework_done": lessonstudent.homework_done
                 }
                 ok, error = send_otp_to_phone(**data)
-
+                logger.info('+++ 5 +++')
                 if ok:
                     lessonstudent.sms_sent = True
                     lessonstudent.save()
@@ -235,6 +241,7 @@ def send_sms(request, lesson_id):
                         "message": error
                     })
                     continue
+                logger.info('+++ 6 +++')
         serializer = LessonStudentSerializer(lessonstudents, many=True)
         return Response({"students": serializer.data, "errors": errors}, status=status.HTTP_200_OK)
     else:
