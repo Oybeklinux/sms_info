@@ -105,6 +105,8 @@ def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_ava
             "message": message
         }
         url = env('url')
+    logger.info(url)
+    logger.info(credentials)
     session = requests.session()
     adapter = TlsAdapter(ssl.OP_NO_SSLv2)
     session.mount("https://", adapter)
