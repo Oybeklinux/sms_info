@@ -89,18 +89,28 @@ def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_ava
             .replace("payer_name", payer_name) \
             .replace("student_name", student_name) \
             .replace("study_date", study_date)
-    url = 'https://api.smsfly.uz/'
-    credentials = {
-        "key": env("token"),
-        "phone": str(phone_number),
-        "message": message
-    }
+
+    if env('smsgateway') == '1':
+
+        credentials = {
+            "login": env('login'),
+            "password": env('password'),
+            "data": [{"phone": str(phone_number), "text": message}]
+        }
+        url = env('url_swg')
+    else:
+        credentials = {
+            "key": env("token"),
+            "phone": str(phone_number),
+            "message": message
+        }
+        url = env('url')
     session = requests.session()
     adapter = TlsAdapter(ssl.OP_NO_SSLv2)
     session.mount("https://", adapter)
     try:
         response = session.request(method='POST', url=url, json=credentials)
-        # print(response.text)
+
         data = json.loads(response.text)
         logger.info(data)
         if data['success']:
