@@ -182,13 +182,14 @@ def send_sms(request, lesson_id):
     if lessonstudents:
         errors = []
         for lessonstudent in lessonstudents:
-
+            payer_name = ""
             if not lessonstudent.sms_sent:
                 student = lessonstudent.student
 
                 if not student.paid_by_parents:
                     if lessonstudent.student.phone:
                         phone = lessonstudent.student.phone
+                        payer_name = f"{student.surname} {student.first_name}"
                     else:
                         errors.append({
                             "student_id": student.id,
@@ -208,15 +209,22 @@ def send_sms(request, lesson_id):
                             "message": "No phone of payer is provided"
                         })
                         continue
-
-                    phone = lessonstudent.student.payer.phone
-
-                message = f'Название урока: {lessonstudent.lesson.theme if lessonstudent.lesson.theme else ""}\n' \
-                          f'Число: {lessonstudent.lesson.date}\n' \
-                          f'Домашняя работа: {"сделана" if lessonstudent.homework_done else "не сделана"}\n' \
-                          f'Присутствие на уроке: {"был(а)" if lessonstudent.is_available else "не был(а)"}'
+                    payer = lessonstudent.student.payer
+                    phone = payer.phone
+                    payer_name = f"{payer.surname} {payer.first_name}"
+                student_name = f"{student.surname} {student.first_name}"
+                study_date = lessonstudent.lesson.date.strftime("%d-%m-%Y")
                 phone = re.sub(r'[^\d]', '', phone)
-                ok, error = send_otp_to_phone(phone, message)
+
+                data = {
+                    "phone_number": phone,
+                    "payer_name": payer_name,
+                    "student_name": student_name,
+                    "study_date": study_date,
+                    "is_available": lessonstudent.is_available,
+                    "homework_done": lessonstudent.homework_done
+                }
+                ok, error = send_otp_to_phone(**data)
 
                 if ok:
                     lessonstudent.sms_sent = True

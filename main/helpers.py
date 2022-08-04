@@ -7,11 +7,10 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 from requests.packages.urllib3.util import ssl_
 import logging
-logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 
+logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# logging.config.fileConfig('/path/to/logging.conf')
 env = environ.Env()
 environ.Env.read_env()
 
@@ -19,6 +18,50 @@ environ.Env.read_env()
 CIPHERS = (
     'AES256-SHA'
 )
+
+message_available = """
+Здравствуйте, payer_name! 
+
+Администрация IT-ACADEMY уведомляет вас о том, что студент student_name пропустил урок study_date числа. 
+
+В случае, если студент заболел или имеет другую уважительную причину, просим вас уведомить Администратора
+
+С уважением,
+Администрация IT Academy
+
+——
+
+Assalomu alaykum payer_name!
+
+Sizni IT-ACADEMY maʼmuriyati student_name talaba study_date sanasida dars qoldirganligi haqida xabar beradi.
+
+Agar talaba kasal bo'lib qolgan bo’lsa yoki boshqa uzrli sababga ega bo'lsa, administratorga xabar berishingizni so’raymiz
+
+Hurmat bilan,
+IT Academy ma'muriyati
+"""
+
+message_homework = """
+Здравствуйте, payer_name! 
+
+Администрация IT-ACADEMY уведомляет вас о том, что студент student_name не выполнил домашнее задание за study_date число. 
+
+Мы хотим, чтобы наши студенты учились, работали над собой, достигали своих целей, но это возможно только когда мы работаем с родителями сообща. Поэтому просим вас принять меры, чтобы ребёнок выполнял все задания в срок
+
+С уважением,
+Администрация IT Academy
+
+——
+
+Assalomu alaykum payer_name!
+
+Sizni IT-ACADEMY maʼmuriyati student_name talaba study_date sanasida berilgan vazifani bajarmaganligi haqida xabar beradi.
+
+Biz o'quvchilarimiz o'qishlarini, o’z ustida ishlashlarini, o'z maqsadlariga erishishlarini xohlaymiz, lekin bunga faqat ota-onalar bilan birgalikda ishlaganda erishimiz mumkin. Shuning uchun biz sizdan bolaning barcha vazifalarni o'z vaqtida bajarishi uchun choralar ko'rishingizni so'raymiz.
+
+Hurmat bilan,
+IT Academy ma'muriyati
+"""
 
 
 class TlsAdapter(HTTPAdapter):
@@ -34,8 +77,18 @@ class TlsAdapter(HTTPAdapter):
                                        **pool_kwargs)
 
 
-def send_otp_to_phone(phone_number, message):
-    # otp = random.randint(100000, 999999)
+def send_otp_to_phone(phone_number, student_name, payer_name, study_date, is_available=True, homework_done=True):
+
+    if not is_available:
+        message = message_available\
+            .replace("payer_name", payer_name)\
+            .replace("student_name",student_name)\
+            .replace("study_date", study_date)
+    elif not homework_done:
+        message = message_homework \
+            .replace("payer_name", payer_name) \
+            .replace("student_name", student_name) \
+            .replace("study_date", study_date)
     url = 'https://api.smsfly.uz/'
     credentials = {
         "key": env("token"),

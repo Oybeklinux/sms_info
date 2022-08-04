@@ -3,3 +3,88 @@ DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
 DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
 DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
 INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+ERROR:django.request:Internal Server Error: /send_sms/6/
+Traceback (most recent call last):
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\views\generic\base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\views.py", line 222, in send_sms
+    "student_name": student_name,
+UnboundLocalError: local variable 'student_name' referenced before assignment
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\views.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+ERROR:django.request:Internal Server Error: /send_sms/6/
+Traceback (most recent call last):
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\django\views\generic\base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\virtual\lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\views.py", line 227, in send_sms
+    ok, error = send_otp_to_phone(**data)
+  File "C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\helpers.py", line 86, in send_otp_to_phone
+    .replace("study_date", study_date)
+TypeError: replace() argument 2 must be str, not datetime.date
+INFO:django.utils.autoreload:C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\views.py changed, reloading.
+DEBUG:environ.environ:Read environment variables from: C:\Users\oybek\Desktop\Desktop\Amaliyotga asoslangan video darslar\sms_info\sms_info\main\.env
+DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
+DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
+INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
+DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
+DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
+INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
+DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
+DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
+INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
+DEBUG:environ.environ:get 'token' casted as 'None' with default '<NoValue>'
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.smsfly.uz:443
+DEBUG:urllib3.connectionpool:https://api.smsfly.uz:443 "POST / HTTP/1.1" 200 None
+INFO:main.helpers:{'success': True, 'reason': 'SUCCESS', 'resultCode': 0}
