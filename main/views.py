@@ -39,7 +39,7 @@ def students2gstudents(users):
     groupstudents = []
 
     for user in users:
-        groupstudents.append(GroupStudent(student_id=user['student'], group_id=user['group']))
+        groupstudents.append(GroupStudent(id=user['id'], student_id=user['student'], group_id=user['group']))
     return groupstudents
 
 
@@ -145,7 +145,7 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
     filterset_fields = ['group']
 
     def list(self, request):
-        group = request.query_params.get('group', None)
+        group = request.query_params.get('students_to_add', None)
         if not group:
             serializer = GroupStudentSerializer(self.queryset, many=True)
             return Response(serializer.data)
@@ -157,12 +157,12 @@ class GroupStudentViewSet(viewsets.ModelViewSet):
                 print(error)
                 return Response({"message": "No such group"}, status=status.HTTP_404_NOT_FOUND)
 
-            users = GroupStudent.objects.filter(group=group).values('student', 'group')
+            users = GroupStudent.objects.filter(group=group).values('id', 'student', 'group')
             users_id = [user['student'] for user in users]
 
             users1 = User.objects.exclude(id__in=users_id)
             users1 = users1.filter(role='student')
-            users1 = [{'student': user.id, "group": None} for user in users1]
+            users1 = [{'id': None, 'student': user.id, "group": None} for user in users1]
 
             users = list(users) + users1
 

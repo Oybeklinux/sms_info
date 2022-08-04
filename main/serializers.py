@@ -193,6 +193,7 @@ class GroupStudentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         user = User.objects.get(id=instance.student.id)
+        print(instance.id, instance)
         return {
             "id": instance.id,
             "created": instance.created,
