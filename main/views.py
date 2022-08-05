@@ -82,6 +82,9 @@ def add_hw_and_is_available(request, pk):
         serializer = LessonStudentSerializer(data=objects, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        lesson = Lesson.objects.get(id=pk)
+        lesson.ended = True
+        lesson.save()
         return Response(objects, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         try:

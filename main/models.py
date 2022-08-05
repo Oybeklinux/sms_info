@@ -41,6 +41,7 @@ class Lesson(models.Model):
     theme = models.CharField(max_length=300, null=True, blank=True)
     comment = models.CharField(max_length=300, null=True)
     date = models.DateField()
+    ended = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('date', 'groupmonth')
