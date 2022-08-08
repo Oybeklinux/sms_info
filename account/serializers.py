@@ -19,11 +19,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents', 'payer']
 
     def to_representation(self, instance):
-        token = Token.objects.filter(user=instance).values('key')
-        if token:
-            token = token[0]['key']
-        else:
-            token = None
+        # token = Token.objects.filter(user=instance).values('key')
+        # if token:
+        #     token = token[0]['key']
+        # else:
+        #     token = None
         user = instance
         group_id_list = GroupStudent.objects.filter(student=user).values_list('group_id')
         group_id_list = [obj[0] for obj in group_id_list]
@@ -35,8 +35,9 @@ class UserSerializer(serializers.ModelSerializer):
             del gr['groupmonth']
             grps.append(gr)
 
+        payer = UserSerializer(user.payer) if user.payer else None
         return {
-            'token': token,
+            # 'token': token,
             "username": user.username,
             "email": user.email,
             "role": user.role,
@@ -52,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
             "groups": grps,
-            "payer": user.payer
+            "payer": payer.data if payer else None
         }
 
     # def validate_first_name(self, value):
