@@ -35,7 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
             del gr['groupmonth']
             grps.append(gr)
 
-        payer = UserSerializer(user.payer) if user.payer else None
         return {
             # 'token': token,
             "username": user.username,
@@ -53,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
             "groups": grps,
-            "payer": payer.data if payer else None
+            "payer": user.payer.id if user.payer else None
         }
 
     # def validate_first_name(self, value):
