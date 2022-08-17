@@ -32,11 +32,16 @@ class User(AbstractUser):
     study = models.BooleanField(default=None, null=True)
     work = models.BooleanField(default=None, null=True)
     paid_by_parents = models.BooleanField(default=False)
-    payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True, blank=True)
+    payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True, blank=True, related_name="students")
 
     def __str__(self):
         return self.username
 
+
+class UserParent(models.Model):
+    child = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="children")
+    parent = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="parents")
+    who = models.CharField(max_length=20, null=True, blank=True)
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

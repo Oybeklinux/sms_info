@@ -34,6 +34,9 @@ class UserSerializer(serializers.ModelSerializer):
         for gr in groups.data:
             del gr['groupmonth']
             grps.append(gr)
+        prayers = []
+        if user.payer:
+            prayers.append(user.payer.id)
 
         return {
             # 'token': token,
@@ -52,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
             "groups": grps,
-            "payer": user.payer.id if user.payer else None
+            "payer": prayers
         }
 
     # def validate_first_name(self, value):
