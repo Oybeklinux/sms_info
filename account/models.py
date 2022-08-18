@@ -36,7 +36,7 @@ class User(AbstractUser):
     parent = models.ManyToManyField("User", null=True, related_name="parents")
 
     def __str__(self):
-        return self.username
+        return f"{self.role} {self.username}"
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
