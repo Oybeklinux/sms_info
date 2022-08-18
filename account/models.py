@@ -33,7 +33,7 @@ class User(AbstractUser):
     work = models.BooleanField(default=None, null=True)
     paid_by_parents = models.BooleanField(default=False)
     # payer = models.ForeignKey("User", on_delete=models.SET_NULL, null=True, blank=True, related_name="students")
-    parent = models.ManyToManyField("User", null=True, related_name="parents")
+    parent = models.ManyToManyField("User", null=True, related_name="parents", blank=True)
 
     def __str__(self):
         return f"{self.role} {self.username}"
