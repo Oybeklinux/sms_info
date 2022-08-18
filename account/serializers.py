@@ -11,35 +11,30 @@ class PeopleSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work']
 
 
+
+
 class UserSerializer(serializers.ModelSerializer):
     # phone = serializers.CharField(required=True)
-
     class Meta:
         model = User
-        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents', 'payer']
+        fields = ['id', 'first_name','surname','last_name','role', 'username', 'email', 'telegram',  'phone', 'dob', 'gender', 'study', 'work', 'paid_by_parents', 'parent']
 
     def to_representation(self, instance):
-        # token = Token.objects.filter(user=instance).values('key')
-        # if token:
-        #     token = token[0]['key']
-        # else:
-        #     token = None
         user = instance
-        group_id_list = GroupStudent.objects.filter(student=user).values_list('group_id')
-        group_id_list = [obj[0] for obj in group_id_list]
-        groups = Group.objects.filter(pk__in=group_id_list)
-        groups = GroupSerializer(groups, many=True)
+        # group_id_list = GroupStudent.objects.filter(student=user).values_list('group_id')
+        # group_id_list = [obj[0] for obj in group_id_list]
+        # groups = Group.objects.filter(pk__in=group_id_list)
+        # groups = GroupSerializer(groups, many=True)
 
-        grps = []
-        for gr in groups.data:
-            del gr['groupmonth']
-            grps.append(gr)
-        prayers = []
-        if user.payer:
-            prayers.append(user.payer.id)
+        groups = []
+        for group_student in user.group_monthes.all():
+            groups.append(group_student.group.id)
+
+        parents = []
+        for parent in user.parent.all():
+            parents.append(parent.id)
 
         return {
-            # 'token': token,
             "username": user.username,
             "email": user.email,
             "role": user.role,
@@ -54,8 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
             "work": user.work,
             "study": user.study,
             "paid_by_parents": user.paid_by_parents,
-            "groups": grps,
-            "payer": prayers
+            "groups": groups,
+            "parent":  parents
         }
 
     # def validate_first_name(self, value):

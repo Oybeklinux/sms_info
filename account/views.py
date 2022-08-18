@@ -87,7 +87,21 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'put', 'patch', 'delete']
+    # http_method_names = ['get', 'put', 'patch', 'delete']
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        data = request.data
+        if 'parent' in data:
+            user.parent.clear()
+            for parent in User.objects.filter(role='payer', id__in=data['parent']):
+                user.parent.add(parent)
+
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -101,7 +115,21 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(role="student")
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    http_method_names = ['get']
+    http_method_names = ['get','post']
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        payers = data.pop('payer')
+        print(data)
+        # Alohida parentni kiritish
+        # Alohida student parentni kiritish
+
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()  # bulk save
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PayerViewSet(viewsets.ModelViewSet):
